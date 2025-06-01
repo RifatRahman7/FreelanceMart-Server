@@ -8,7 +8,6 @@ app.use(cors());
 app.use(express.json());
 
 
-
 //const uri = "mongodb+srv://FreelanceMart:M7ODUxryHWwHOSuu@cluster0.gle9ffl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.gle9ffl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -25,8 +24,15 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    const tasksCollection = client.db("freelanceMart").collection("tasks");
+    app.post("/tasks", async (req, res) => {
+      const task = req.body;
+      console.log(task);
+      const result = await tasksCollection.insertOne(task);
+      res.send(result);
+    });
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log("Pinged your deployment. You are successfully connected to MongoDB!");
   } finally {
     //await client.close();
   }
@@ -35,7 +41,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-  res.send('Marketplace server is working!');
+  res.send('Marketplace server is working perfectly!');
 });
 
 
