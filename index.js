@@ -25,6 +25,16 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const tasksCollection = client.db("freelanceMart").collection("tasks");
+    app.get("/tasks", async (req, res) => {
+      const result = await tasksCollection.find().sort({deadline:1}).toArray();
+      console.log(result);
+      res.send(result);
+    })
+    app.get("/tasks/featured", async (req, res) => {
+      const result = await tasksCollection.find().sort({deadline:1}).limit(6).toArray();
+      console.log(result);
+      res.send(result);
+    });
     app.post("/tasks", async (req, res) => {
       const task = req.body;
       console.log(task);
