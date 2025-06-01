@@ -35,6 +35,17 @@ async function run() {
       const result = await tasksCollection.find({userEmail}).toArray();
       res.send(result);
     })
+
+app.delete("/tasks/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const result = await tasksCollection.deleteOne({ _id: new ObjectId(id) });
+    res.send(result);
+  } catch (error) {
+    res.status(500).send({ message: "Error deleting task", error });
+    }
+})
+
     app.get("/tasks", async (req, res) => {
       const result = await tasksCollection.find().sort({deadline:1}).toArray();
        //console.log(result);
