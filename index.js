@@ -26,36 +26,51 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const tasksCollection = client.db("freelanceMart").collection("tasks");
+
+    app.patch("/tasks/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedTask = req.body;
+      //console.log(updatedTask);
+      try {
+        const result = await tasksCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: updatedTask }
+        );
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Error updating task", error });
+      }
+    });
     app.get("/my-tasks", async (req, res) => {
       const userEmail = req.query.email;
       //console.log(userEmail);
       if (!userEmail) {
         return res.status(400).send("Email query parameter is required");
       }
-      const result = await tasksCollection.find({userEmail}).toArray();
+      const result = await tasksCollection.find({ userEmail }).toArray();
       res.send(result);
     })
 
-app.delete("/tasks/:id", async (req, res) => {
-  const id = req.params.id;
-  try {
-    const result = await tasksCollection.deleteOne({ _id: new ObjectId(id) });
-    res.send(result);
-  } catch (error) {
-    res.status(500).send({ message: "Error deleting task", error });
-    }
-})
+    app.delete("/tasks/:id", async (req, res) => {
+      const id = req.params.id;
+      try {
+        const result = await tasksCollection.deleteOne({ _id: new ObjectId(id) });
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Error deleting task", error });
+      }
+    })
 
     app.get("/tasks", async (req, res) => {
-      const result = await tasksCollection.find().sort({deadline:1}).toArray();
-       //console.log(result);
+      const result = await tasksCollection.find().sort({ deadline: 1 }).toArray();
+      //console.log(result);
       res.send(result);
     })
 
-     
+
 
     app.get("/tasks/featured", async (req, res) => {
-      const result = await tasksCollection.find().sort({deadline:1}).limit(6).toArray();
+      const result = await tasksCollection.find().sort({ deadline: 1 }).limit(6).toArray();
       console.log(result);
       res.send(result);
     });
