@@ -1,15 +1,12 @@
+require('dotenv').config()
 const express = require('express');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 const { ObjectId } = require('mongodb');
-require('dotenv').config()
 app.use(cors());
 app.use(express.json());
-
-
-//const uri = "mongodb+srv://FreelanceMart:M7ODUxryHWwHOSuu@cluster0.gle9ffl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.gle9ffl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 //console.log(process.env.DB_USER, process.env.DB_PASS);
@@ -30,7 +27,7 @@ async function run() {
     app.patch("/tasks/:id", async (req, res) => {
       const id = req.params.id;
       const updatedTask = req.body;
-      //console.log(updatedTask);
+      console.log(updatedTask);
       try {
         const result = await tasksCollection.updateOne(
           { _id: new ObjectId(id) },
@@ -74,19 +71,7 @@ async function run() {
       console.log(result);
       res.send(result);
     });
-    // app.get('/tasks/:id', async (req, res) => {
-    //   const { id } = req.params;
-    //   console.log(id);
-    //   try {
-    //     const task = await taskCollection.findOne({ _id: new ObjectId(id) });
-    //     if (!task) {
-    //       return res.status(404).send({ message: "Task not found" });
-    //     }
-    //     res.send(task);
-    //   } catch (error) {
-    //     res.status(500).send({ message: "Invalid task ID", error });
-    //   }
-    // });
+    
     app.get('/tasks/:id', async (req, res) => {
       const { id } = req.params;
       if (!ObjectId.isValid(id)) {
