@@ -74,16 +74,34 @@ async function run() {
       console.log(result);
       res.send(result);
     });
+    // app.get('/tasks/:id', async (req, res) => {
+    //   const { id } = req.params;
+    //   console.log(id);
+    //   try {
+    //     const task = await taskCollection.findOne({ _id: new ObjectId(id) });
+    //     if (!task) {
+    //       return res.status(404).send({ message: "Task not found" });
+    //     }
+    //     res.send(task);
+    //   } catch (error) {
+    //     res.status(500).send({ message: "Invalid task ID", error });
+    //   }
+    // });
     app.get('/tasks/:id', async (req, res) => {
       const { id } = req.params;
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).send({ message: "Invalid task ID format" });
+      }
+
       try {
-        const task = await taskCollection.findOne({ _id: new ObjectId(id) });
+        const task = await tasksCollection.findOne({ _id: new ObjectId(id) });
         if (!task) {
           return res.status(404).send({ message: "Task not found" });
         }
         res.send(task);
       } catch (error) {
-        res.status(500).send({ message: "Invalid task ID", error });
+        console.error("Error retrieving task:", error);
+        res.status(500).send({ message: "Internal Server Error", error });
       }
     });
     app.post("/tasks", async (req, res) => {
